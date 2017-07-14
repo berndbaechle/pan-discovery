@@ -38,12 +38,21 @@ public class DatabaseProcessMonitorTest {
     }
 
     @Test
-    public void testProgress() {
+    public void testWithoutProgress() {
         Logger loggerMockup = mock(Logger.class);
         DatabaseProcessMonitor monitor = new DatabaseProcessMonitor(loggerMockup);
         monitor.setMessage("Hello", 0, 0);
         verify(loggerMockup, times(0)).debug(anyString());
         monitor.displayUpdateLog();
         verify(loggerMockup, times(1)).debug("Hello");
+    }
+
+    @Test
+    public void testWithProgress() {
+        Logger loggerMockup = mock(Logger.class);
+        DatabaseProcessMonitor monitor = new DatabaseProcessMonitor(loggerMockup);
+        monitor.setMessage("Hello", 2, 3);
+        monitor.displayUpdateLog();
+        verify(loggerMockup, times(1)).debug("Hello: 2 out of 3 (66%)");
     }
 }
