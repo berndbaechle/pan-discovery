@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCountCallbackHandler;
 import org.springframework.jdbc.support.JdbcUtils;
@@ -27,7 +26,6 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 /**
  * Database access abstraction
@@ -41,14 +39,17 @@ public class AbstractDatabase {
     private String dbName = "DB";
     private SchemaBlacklist schemaBlacklist;
     private SortedSet<DatabaseTable> allTables = new TreeSet<>();
+    private DatabaseProcessMonitor processMonitor;
 
     @Autowired
     public AbstractDatabase(
         @Value("${pan-discovery.db.fetchsize:100}") int fetchSize,
-        JdbcTemplate jdbcTemplate, SchemaBlacklist schemaBlacklist) {
+        JdbcTemplate jdbcTemplate, SchemaBlacklist schemaBlacklist,
+        DatabaseProcessMonitor processMonitor) {
         this.fetchSize = fetchSize;
         this.jdbcTemplate = jdbcTemplate;
         this.schemaBlacklist = schemaBlacklist;
+        this.processMonitor = processMonitor;
     }
 
     @Transactional(readOnly = true)
@@ -81,9 +82,8 @@ public class AbstractDatabase {
             logger.warn("Issue while loading database meta data: {}", e.getLocalizedMessage());
         }
 
-        logger.info("Counting table records...");
-
         Iterator<DatabaseTable> tableIterator = allTables.iterator();
+        int progressCounter = 0;
 
         while (tableIterator.hasNext()) {
             DatabaseTable t = tableIterator.next();
@@ -91,11 +91,15 @@ public class AbstractDatabase {
             try {
                 BigDecimal rows = jdbcTemplate.queryForObject("select count(*) from " + t.toString(), BigDecimal.class);
                 t.setRows(rows);
+                progressCounter += 1;
+                processMonitor.setMessage("Counting table records", progressCounter, allTables.size());
             } catch (DataAccessException e) {
                 logger.warn("Could not read table {}, ignoring it", t);
                 tableIterator.remove();
             }
         }
+
+        processMonitor.setMessage(null);
 
         return allTables;
     }

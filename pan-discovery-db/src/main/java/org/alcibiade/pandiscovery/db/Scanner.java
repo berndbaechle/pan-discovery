@@ -5,12 +5,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Application entry point.
  */
 
 @SpringBootApplication
+@EnableScheduling
 @ComponentScan(basePackages = {"org.alcibiade.pandiscovery.db", "org.alcibiade.pandiscovery.scan"})
 public class Scanner {
 
