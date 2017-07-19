@@ -64,19 +64,20 @@ public class AbstractDatabase {
 
         try {
             JdbcUtils.extractDatabaseMetaData(jdbcTemplate.getDataSource(), databaseMetaData -> {
-                ResultSet tablesResultSet = databaseMetaData.getTables(
-                    null, null, null, objectTypes);
+                try (ResultSet tablesResultSet = databaseMetaData.getTables(
+                    null, null, null, objectTypes)) {
 
-                while (tablesResultSet.next()) {
-                    String owner = tablesResultSet.getString("TABLE_SCHEM");
-                    String name = tablesResultSet.getString("TABLE_NAME");
-                    DatabaseTable dbTable = new DatabaseTable(owner, name);
-                    if (schemaBlacklist.acceptsSchema(dbTable)) {
-                        allTables.add(dbTable);
+                    while (tablesResultSet.next()) {
+                        String owner = tablesResultSet.getString("TABLE_SCHEM");
+                        String name = tablesResultSet.getString("TABLE_NAME");
+                        DatabaseTable dbTable = new DatabaseTable(owner, name);
+                        if (schemaBlacklist.acceptsSchema(dbTable)) {
+                            allTables.add(dbTable);
+                        }
                     }
-                }
 
-                return null;
+                    return null;
+                }
             });
         } catch (MetaDataAccessException e) {
             logger.warn("Issue while loading database meta data: {}", e.getLocalizedMessage());
