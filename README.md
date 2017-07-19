@@ -18,7 +18,9 @@ The build process will generate two different executable jar artefacts:
 
 
 
-## Use to scan Filesystems
+## Usage
+
+### Use to scan Filesystems
 
 ```
 java -jar pan-discovery-fs-xxx.jar [--verbose] <folder> [<folder> ...]
@@ -42,7 +44,7 @@ File;Matches;Content Type;Sample Match
 
 
 
-## Use to scan a relational Database
+### Use to scan a relational Database
 
 To scan a relational database, you need to provide a JDBC driver corresponding to your
 database system, and credentials for a user access having at least read privileges
@@ -68,3 +70,21 @@ findings in the explored schema.
 
 [travis-image]: https://travis-ci.org/alcibiade/pan-discovery.svg?branch=master
 [travis-url]: https://travis-ci.org/alcibiade/pan-discovery
+
+
+## Build
+
+### Build with Oracle Database support
+
+To build the tool with support for Oracle Database, the **oracle** profile must be explicitly activated:
+
+```
+./mvnw -Poracle clean install
+```
+
+Note that the Oracle JDBC driver dependency will be downloaded directly from official Oracle JDBC Maven repository.
+This repository requires authentication through an oracle.com account.
+
+For Maven to use it at build-time, your credentials must be set in the **~/.m2/settings.xml** file. 
+A sample of the file content is provided in [sample-settings.xml](sample-settings.xml).
+You only have to update **username** and **password** to your own credentials.
