@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
  */
 public class TableGenerator {
 
-    public static void createTable(JdbcTemplate jdbcTemplate) {
+    public static void createTestContent(JdbcTemplate jdbcTemplate) {
         jdbcTemplate.execute("create table t1 (ix varchar(32) primary key, value varchar(42))");
         jdbcTemplate.execute("insert into t1 values ('key1', 'value 1')");
         jdbcTemplate.execute("insert into t1 values ('key2', 'value 2')");
@@ -19,6 +19,10 @@ public class TableGenerator {
         jdbcTemplate.execute("insert into t1 values ('Card Visa 3', '4111111111111111')");
         jdbcTemplate.execute("insert into t1 values ('Card MC 1', '5105105105105100')");
         jdbcTemplate.execute("insert into t1 values ('Card MC 2', '5555555555554444')");
+
+        jdbcTemplate.execute("create table t2 (ix varchar(32) primary key, value varchar(42))");
+        jdbcTemplate.execute("insert into t2 values ('key1', 'The card is 4012 8888 8888 1881')");
+        jdbcTemplate.execute("insert into t2 values ('key2', 'IBAN: LU99 1401 2888 8888 8188 12')");
     }
 
 
