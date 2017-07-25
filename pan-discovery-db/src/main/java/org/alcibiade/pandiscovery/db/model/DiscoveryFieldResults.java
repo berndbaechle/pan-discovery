@@ -3,7 +3,7 @@ package org.alcibiade.pandiscovery.db.model;
 import org.alcibiade.pandiscovery.scan.CardType;
 
 import java.util.EnumMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,7 +19,7 @@ public class DiscoveryFieldResults {
 
     public DiscoveryFieldResults() {
         matchesByCardType = new EnumMap<>(CardType.class);
-        sampleMatches = new HashSet<>();
+        sampleMatches = new LinkedHashSet<>();
 
         for (CardType type : CardType.values()) {
             matchesByCardType.put(type, 0L);

@@ -3,8 +3,10 @@ package org.alcibiade.pandiscovery.db;
 import org.alcibiade.pandiscovery.db.dao.AbstractDatabase;
 import org.alcibiade.pandiscovery.db.model.DatabaseField;
 import org.alcibiade.pandiscovery.db.model.DatabaseTable;
+import org.alcibiade.pandiscovery.db.model.DiscoveryMatch;
 import org.alcibiade.pandiscovery.db.model.DiscoveryReport;
 import org.alcibiade.pandiscovery.db.service.DiscoveryService;
+import org.alcibiade.pandiscovery.scan.CardType;
 import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Before;
@@ -17,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Set;
 import java.util.SortedSet;
 
 /**
@@ -76,7 +79,10 @@ public class DatabaseScanTest {
             .filter(f -> f.getTable().getName().equalsIgnoreCase("t2"))
             .findFirst().get();
 
-        Assertions.assertThat(report.getMatches(t2Value).getSampleMatches()).hasSize(1);
-
+        Set<DiscoveryMatch> sampleMatches = report.getMatches(t2Value).getSampleMatches();
+        Assertions.assertThat(sampleMatches)
+            .hasSize(2)
+            .containsOnlyOnce(new DiscoveryMatch(CardType.VISA, "4012888888881881", "The card is 4012 8888 8888 1881"))
+            .containsOnlyOnce(new DiscoveryMatch(CardType.VISA, "4012888888881881", "IBAN: LU99 4012 8888 8888 1881 12"));
     }
 }

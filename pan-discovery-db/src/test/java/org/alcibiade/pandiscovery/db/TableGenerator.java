@@ -22,7 +22,7 @@ public class TableGenerator {
 
         jdbcTemplate.execute("create table t2 (ix varchar(32) primary key, value varchar(42))");
         jdbcTemplate.execute("insert into t2 values ('key1', 'The card is 4012 8888 8888 1881')");
-        jdbcTemplate.execute("insert into t2 values ('key2', 'IBAN: LU99 1401 2888 8888 8188 12')");
+        jdbcTemplate.execute("insert into t2 values ('key2', 'IBAN: LU99 4012 8888 8888 1881 12')");
     }
 
 

@@ -42,6 +42,7 @@ public class AbstractDatabase {
     private SchemaBlacklist schemaBlacklist;
     private SortedSet<DatabaseTable> allTables = new TreeSet<>();
     private DatabaseProcessMonitor processMonitor;
+
     @Autowired
     public AbstractDatabase(
         @Value("${pan-discovery.db.fetchsize:100}") int fetchSize,
@@ -186,7 +187,7 @@ public class AbstractDatabase {
                     DetectionResult result = detector.detectMatch(value);
                     if (result != null) {
                         DatabaseField field = new DatabaseField(table, getColumnNames()[col]);
-                        report.report(field, result.getCardType(), value);
+                        report.report(field, result.getCardType(), result.getSample(), result.getSampleLine());
                         logger.trace("Reporting {} as {} in {}", value, result.getCardType(), field);
                         matches += 1;
                     }

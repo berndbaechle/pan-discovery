@@ -11,9 +11,12 @@ public class DiscoveryMatch {
 
     private String rawValue;
 
-    public DiscoveryMatch(CardType cardType, String rawValue) {
+    private String pan;
+
+    public DiscoveryMatch(CardType cardType, String pan, String rawValue) {
         this.cardType = cardType;
         this.rawValue = rawValue;
+        this.pan = pan;
     }
 
     public CardType getCardType() {
@@ -24,6 +27,10 @@ public class DiscoveryMatch {
         return rawValue;
     }
 
+    public String getPan() {
+        return pan;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -32,13 +39,15 @@ public class DiscoveryMatch {
         DiscoveryMatch that = (DiscoveryMatch) o;
 
         if (cardType != that.cardType) return false;
-        return rawValue != null ? rawValue.equals(that.rawValue) : that.rawValue == null;
+        if (!rawValue.equals(that.rawValue)) return false;
+        return pan.equals(that.pan);
     }
 
     @Override
     public int hashCode() {
-        int result = cardType != null ? cardType.hashCode() : 0;
-        result = 31 * result + (rawValue != null ? rawValue.hashCode() : 0);
+        int result = cardType.hashCode();
+        result = 31 * result + rawValue.hashCode();
+        result = 31 * result + pan.hashCode();
         return result;
     }
 
@@ -47,6 +56,7 @@ public class DiscoveryMatch {
         return "DiscoveryMatch{" +
             "cardType=" + cardType +
             ", rawValue='" + rawValue + '\'' +
+            ", pan='" + pan + '\'' +
             '}';
     }
 }

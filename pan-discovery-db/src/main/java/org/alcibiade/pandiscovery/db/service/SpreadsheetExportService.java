@@ -56,7 +56,8 @@ public class SpreadsheetExportService implements ExportService {
         titleRow.createCell(1).setCellValue("Table");
         titleRow.createCell(2).setCellValue("Field");
         titleRow.createCell(3).setCellValue("Card type");
-        titleRow.createCell(4).setCellValue("Raw value");
+        titleRow.createCell(4).setCellValue("Card PAN");
+        titleRow.createCell(5).setCellValue("Raw value");
 
         for (DatabaseField field : report) {
             DiscoveryFieldResults result = report.getMatches(field);
@@ -67,7 +68,8 @@ public class SpreadsheetExportService implements ExportService {
                 row.createCell(1).setCellValue(field.getTable().getName());
                 row.createCell(2).setCellValue(field.getName());
                 row.createCell(3).setCellValue(match.getCardType().toString());
-                row.createCell(4).setCellValue(match.getRawValue());
+                row.createCell(4).setCellValue(match.getPan());
+                row.createCell(5).setCellValue(match.getRawValue());
             }
         }
 
@@ -77,6 +79,7 @@ public class SpreadsheetExportService implements ExportService {
             sheetSamples.autoSizeColumn(2);
             sheetSamples.autoSizeColumn(3);
             sheetSamples.autoSizeColumn(4);
+            sheetSamples.autoSizeColumn(5);
         }
     }
 

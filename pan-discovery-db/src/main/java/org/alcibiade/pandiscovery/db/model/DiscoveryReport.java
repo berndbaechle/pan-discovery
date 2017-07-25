@@ -20,12 +20,12 @@ public class DiscoveryReport implements Iterable<DatabaseField> {
         this.reportDateStart = new Date();
     }
 
-    public synchronized void report(DatabaseField field, CardType cardType, String rawValue) {
+    public synchronized void report(DatabaseField field, CardType cardType, String pan, String rawValue) {
         if (!matches.containsKey(field)) {
             matches.put(field, new DiscoveryFieldResults());
         }
 
-        matches.get(field).addMatch(new DiscoveryMatch(cardType, rawValue));
+        matches.get(field).addMatch(new DiscoveryMatch(cardType, pan, rawValue));
     }
 
     @Override
