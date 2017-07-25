@@ -112,7 +112,11 @@ drwxr-xr-x 2 yk yk 4096 Jul 25 20:24 report
 Now let's run the docker image in an interactive container:
 
 ```
-yk@triton:~/test$ docker run -it -v $PWD/folder_to_scan:/scanfolder -v $PWD/report:/report alcibiade/pan-discovery-fs
+yk@triton:~/test$ docker run -it --rm \
+    -v $PWD/folder_to_scan:/scanfolder \
+    -v $PWD/report:/report \
+    
+    alcibiade/pan-discovery-fs
 
     ____  ___    _   __   ____  _       Version 1.0.0-SNAPSHOT
    / __ \/   |  / | / /  / __ \(_)_____________ _   _____  _______  __
@@ -151,11 +155,10 @@ yk@triton:~$ docker pull alcibiade/pan-discovery-db
 In this example we will scan the PostgreSQL database on host 'triton':
 
 ```
-yk@triton:~/test$ docker run -it \
+yk@triton:~/test$ docker run -it --rm --net=host \
     -e db_url=jdbc:postgresql://triton:5432/chess1 \
     -e db_user=chess \
     -e db_password=chess \
-    --net=host \
     -v $PWD/reports:/reports 
     alcibiade/pan-discovery-db
 

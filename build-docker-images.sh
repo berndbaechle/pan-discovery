@@ -12,8 +12,8 @@ cp ${BASE_DIR}/pan-discovery-db/target/pan-discovery-db-*.jar ${DOCKER_DIR}/db/
 cp ${BASE_DIR}/pan-discovery-fs/target/pan-discovery-fs-*.jar ${DOCKER_DIR}/fs/
 
 cd ${DOCKER_DIR}/db/
-docker build -t pan-discovery-db .
+docker build -t alcibiade/pan-discovery-db .
 
 cd ${DOCKER_DIR}/fs/
-docker build -t pan-discovery-fs .
+docker build -t alcibiade/pan-discovery-fs .
 
