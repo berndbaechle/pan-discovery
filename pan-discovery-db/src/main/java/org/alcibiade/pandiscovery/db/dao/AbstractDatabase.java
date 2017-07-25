@@ -17,6 +17,7 @@ import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -32,15 +33,15 @@ import java.util.TreeSet;
  */
 @Component
 public class AbstractDatabase {
+    private static final String DEFAULT_DB_NAME = "DB";
+    private Vendor vendor;
 
     private final int fetchSize;
     private Logger logger = LoggerFactory.getLogger(AbstractDatabase.class);
     private JdbcTemplate jdbcTemplate;
-    private String dbName = "DB";
     private SchemaBlacklist schemaBlacklist;
     private SortedSet<DatabaseTable> allTables = new TreeSet<>();
     private DatabaseProcessMonitor processMonitor;
-
     @Autowired
     public AbstractDatabase(
         @Value("${pan-discovery.db.fetchsize:100}") int fetchSize,
@@ -52,10 +53,33 @@ public class AbstractDatabase {
         this.processMonitor = processMonitor;
     }
 
+    @PostConstruct
+    public void init() throws MetaDataAccessException {
+        JdbcUtils.extractDatabaseMetaData(jdbcTemplate.getDataSource(), databaseMetaData -> {
+            logger.info("Detected database is {} / {}",
+                databaseMetaData.getDatabaseProductName(),
+                databaseMetaData.getDatabaseProductVersion());
+
+            if ("Oracle".equalsIgnoreCase(databaseMetaData.getDatabaseProductName())) {
+                this.vendor = Vendor.ORACLE;
+            }
+
+            return null;
+        });
+    }
+
     @Transactional(readOnly = true)
     public String getDatabaseName() {
+        String dbName = DEFAULT_DB_NAME;
+
+        if (vendor == Vendor.ORACLE) {
+            dbName = this.jdbcTemplate.queryForObject("select value from v$parameter where name = 'db_name'", String.class);
+        }
+
         return dbName;
     }
+
+    private enum Vendor {ORACLE}
 
     @Transactional(readOnly = true)
     public SortedSet<DatabaseTable> getAllTables(String prefix) {
