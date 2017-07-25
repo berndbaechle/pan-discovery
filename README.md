@@ -18,7 +18,7 @@ The build process will generate two different executable jar artefacts:
 
 
 
-## Usage
+## Usage from executable jar files
 
 ### Use to scan Filesystems
 
@@ -88,3 +88,110 @@ This repository requires authentication through an oracle.com account.
 For Maven to use it at build-time, your credentials must be set in the **~/.m2/settings.xml** file. 
 A sample of the file content is provided in [sample-settings.xml](sample-settings.xml).
 You only have to update **username** and **password** to your own credentials.
+
+
+## Use pre-built docker images
+
+### Scan filesystem
+
+The docker image is available on the main docker hub as alcibiade/pan-discovery-fs
+
+```
+yk@triton:~$ docker pull alcibiade/pan-discovery-fs
+```
+
+Here is an example with a folder to scan and a folder to get the report:
+
+```
+yk@triton:~/test$ ls -l
+total 8
+drwxr-xr-x 2 yk yk 4096 Jun 10 16:31 folder_to_scan
+drwxr-xr-x 2 yk yk 4096 Jul 25 20:24 report
+```
+
+Now let's run the docker image in an interactive container:
+
+```
+yk@triton:~/test$ docker run -it -v $PWD/folder_to_scan:/scanfolder -v $PWD/report:/report alcibiade/pan-discovery-fs
+
+    ____  ___    _   __   ____  _       Version 1.0.0-SNAPSHOT
+   / __ \/   |  / | / /  / __ \(_)_____________ _   _____  _______  __
+  / /_/ / /| | /  |/ /  / / / / / ___/ ___/ __ \ | / / _ \/ ___/ / / /
+ / ____/ ___ |/ /|  /  / /_/ / (__  ) /__/ /_/ / |/ /  __/ /  / /_/ /
+/_/   /_/  |_/_/ |_/  /_____/_/____/\___/\____/|___/\___/_/   \__, /
+                                                             /____/
+
+Starting Scanner v1.0.0-SNAPSHOT on d142ff13e13f with PID 7 (/runtime/pan-discovery-fs-1.0.0-SNAPSHOT.jar started by root in /report)
+The following profiles are active: default                     
+Results will be logged in PAN_Discovery_2017-07-25_1825.csv
+Started Scanner in 7.056 seconds (JVM running for 8.893)
+Scanning folder /scanfolder
+Found 10 possible PAN occurrences in 10 files in 4 seconds
+Report written to PAN_Discovery_2017-07-25_1825.csv
+```
+
+Report is available in the local reports folder:
+
+```
+yk@triton:~/test$ ls -l report/
+total 4
+-rw-r--r-- 1 root root 1111 Jul 25 20:25 PAN_Discovery_2017-07-25_1825.csv
+yk@triton:~/test$ 
+```
+
+### Scan a database
+
+
+The docker image is available on the main docker hub as alcibiade/pan-discovery-db
+
+```
+yk@triton:~$ docker pull alcibiade/pan-discovery-db
+```
+
+In this example we will scan the PostgreSQL database on host 'triton':
+
+```
+yk@triton:~/test$ docker run -it \
+    -e db_url=jdbc:postgresql://triton:5432/chess1 \
+    -e db_user=chess \
+    -e db_password=chess \
+    --net=host \
+    -v $PWD/reports:/reports 
+    alcibiade/pan-discovery-db
+
+    ____  ___    _   __   ____  _       Version 1.0.0-SNAPSHOT
+   / __ \/   |  / | / /  / __ \(_)_____________ _   _____  _______  __
+  / /_/ / /| | /  |/ /  / / / / / ___/ ___/ __ \ | / / _ \/ ___/ / / /
+ / ____/ ___ |/ /|  /  / /_/ / (__  ) /__/ /_/ / |/ /  __/ /  / /_/ /
+/_/   /_/  |_/_/ |_/  /_____/_/____/\___/\____/|___/\___/_/   \__, /
+                                                             /____/
+
+Starting Scanner v1.0.0-SNAPSHOT on triton with PID 7 (/runtime/pan-discovery-db-1.0.0-SNAPSHOT.jar started by root in /report)
+The following profiles are active: default
+Detected database is PostgreSQL / 9.5.6
+Started Scanner in 7.93 seconds (JVM running for 9.421)
+[  0%|E:  0h:00min|R:N/A]           0 rows read from public.account
+[  0%|E:  0h:00min|R:N/A]           0 rows read from public.elo_rating
+[  0%|E:  0h:00min|R:N/A]           0 rows read from public.robot_cache
+[  0%|E:  0h:00min|R:N/A]           0 rows read from public.chess_comment
+[  0%|E:  0h:00min|R:N/A]           0 rows read from public.chess_position
+[  0%|E:  0h:00min|R:N/A]           0 rows read from public.chess_move_to_position
+[  0%|E:  0h:00min|R:N/A]           0 rows read from public.chess_move
+[  0%|E:  0h:00min|R:N/A]           0 rows read from public.chess_game
+[  0%|E:  0h:00min|R:N/A]           0 rows read from public.session
+[  0%|E:  0h:00min|R:N/A]           0 rows read from public.token
+[100%|E:  0h:00min|R:  0h:00min]          15 rows read from public.player
+Results: None
+Spreadsheet report written to PAN_Discovery_DB_2017-07-25_1842.xlsx
+Report written to PAN_Discovery_DB_2017-07-25_1842.csv
+
+```
+
+Report is available in the reports folder:
+
+```
+yk@triton:~/test$ ls -l report
+total 8
+-rw-r--r-- 1 root root   35 Jul 25 20:44 PAN_Discovery_DB_2017-07-25_1844.csv
+-rw-r--r-- 1 root root 3947 Jul 25 20:44 PAN_Discovery_DB_2017-07-25_1844.xlsx
+```
