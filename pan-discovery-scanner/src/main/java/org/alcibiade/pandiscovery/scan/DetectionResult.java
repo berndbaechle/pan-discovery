@@ -26,4 +26,24 @@ public class DetectionResult {
     public String getSampleLine() {
         return sampleLine;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DetectionResult that = (DetectionResult) o;
+
+        if (cardType != that.cardType) return false;
+        if (!sample.equals(that.sample)) return false;
+        return sampleLine.equals(that.sampleLine);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = cardType.hashCode();
+        result = 31 * result + sample.hashCode();
+        result = 31 * result + sampleLine.hashCode();
+        return result;
+    }
 }
