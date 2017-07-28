@@ -1,5 +1,7 @@
-package org.alcibiade.pandiscovery.fs;
+package org.alcibiade.pandiscovery.fs.scan;
 
+import org.alcibiade.pandiscovery.fs.FsCsvExportService;
+import org.alcibiade.pandiscovery.fs.RuntimeParameters;
 import org.alcibiade.pandiscovery.scan.Detector;
 import org.apache.tika.Tika;
 import org.slf4j.Logger;
@@ -76,7 +78,7 @@ public class FileScanningService {
                     ScanResult::reduce
                 );
 
-            exportService.register(path, result.getMatches(), mediaType, result.getSample(), result.getSampleLine());
+            exportService.register(path, mediaType, result);
         } catch (IOException | UncheckedIOException e) {
             Throwable t = e;
             while (t.getCause() != null) {
@@ -92,57 +94,17 @@ public class FileScanningService {
         ScanResult result = cardDetectors.stream()
             .map(detector -> detector.detectMatch(line))
             .filter(Objects::nonNull)
-            .map(m -> new ScanResult(m.getSample(), m.getSampleLine(), 1))
+            .map(m -> new ScanResult(m.getSample(), m.getSampleLine(), 1, 1, 0))
             .reduce(
-                ScanResult.EMPTY,
-                ScanResult::reduce
+                new ScanResult(null, null, 1, 0, 0),
+                ScanResult::reduceOnSingleLine
             );
 
         if (logger.isTraceEnabled()) {
-            logger.trace("{}", String.format("%3d - %s", result.getMatches(), line));
+            logger.trace("{}", String.format("%3d/%3d - %s", result.getMatchesHigh(), result.getMatchesLow(), line));
         }
 
         return result;
-    }
-
-    private static class ScanResult {
-
-        public static ScanResult EMPTY = new ScanResult(null, null, 0);
-        private String sample;
-        private String sampleLine;
-        private long matches;
-
-        public ScanResult(String sample, String sampleLine, long matches) {
-            this.sample = sample;
-            this.matches = matches;
-            this.sampleLine = sampleLine;
-        }
-
-        public static ScanResult reduce(ScanResult r1, ScanResult r2) {
-            String sample = r1.getSample() != null ? r1.getSample() : r2.getSample();
-            String sampleLine = r1.getSample() != null ? r1.getSampleLine() : r2.getSampleLine();
-            return new ScanResult(sample, sampleLine, r1.getMatches() + r2.getMatches());
-        }
-
-        public String getSample() {
-            return sample;
-        }
-
-        public String getSampleLine() {
-            return sampleLine;
-        }
-
-        public long getMatches() {
-            return matches;
-        }
-
-        @Override
-        public String toString() {
-            return "ScanResult{" +
-                "sample='" + sample + '\'' +
-                ", matches=" + matches +
-                '}';
-        }
     }
 
 }

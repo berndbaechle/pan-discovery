@@ -1,5 +1,6 @@
 package org.alcibiade.pandiscovery.fs;
 
+import org.alcibiade.pandiscovery.fs.scan.ScanResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,7 @@ public class FsCsvExportService {
         logger.info("Results will be logged in {}", this.csvFilePath);
 
         Files.write(csvFilePath,
-                Collections.singleton("File;Matches;Content Type;Sample Match"),
+            Collections.singleton("File;Total Lines;High Confidence Matches; High Confidence Matches;Content Type"),
                 StandardCharsets.UTF_8,
                 StandardOpenOption.CREATE,
             StandardOpenOption.TRUNCATE_EXISTING);
@@ -67,25 +68,28 @@ public class FsCsvExportService {
         return csvFilePath;
     }
 
-    public void register(Path file, long matches, String contentType, String sample, String sampleLine) {
-        if (runtimeParameters.isVerbose() && matches > 0) {
-            logger.info(String.format("%5d results in %s", matches, file));
+    public void register(Path file, String contentType, ScanResult result) {
+
+        long totalMatches = result.getMatchesHigh() + result.getMatchesLow();
+
+        if (runtimeParameters.isVerbose() && totalMatches > 0) {
+            logger.info(String.format("%5d results in %s", totalMatches, file));
         }
 
         filesExplored += 1;
-        pansDetected += matches;
+        pansDetected += totalMatches;
 
-        if (matches > 0) {
-            String row = String.format("%s;%d;%s;%s",
+        if (totalMatches > 0) {
+            String row = String.format("%s;%d;%d;%d;%s",
                     file.toString(),
-                    matches,
-                    contentType,
-                    sample
+                result.getTotalLines(),
+                result.getMatchesHigh(),
+                result.getMatchesLow(),
+                contentType
             );
 
             List<String> rows = new ArrayList<>();
             rows.add(row);
-            rows.add(sampleLine);
 
             try {
                 Files.write(csvFilePath,
