@@ -6,9 +6,9 @@
         </encoder>
     </appender>
 
-    <logger name="org.alcibiade.pandiscovery" level="DEBUG"/>
+    <logger name="org.alcibiade.pandiscovery" level="OFF"/>
 
-    <root level="DEBUG">
+    <root level="OFF">
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>
