@@ -70,8 +70,11 @@ public class FileScanningService {
         }
 
         try (Reader reader = tika.parse(path)) {
+            LineCounter lineCounter = new LineCounter();
+
             BufferedReader bufferedReader = new BufferedReader(reader);
             ScanResult result = bufferedReader.lines()
+                .map(line -> new LineWrapper(path, lineCounter.getNextLineNumber(), line))
                 .map(this::scan)
                 .reduce(
                     ScanResult.EMPTY,
@@ -89,14 +92,14 @@ public class FileScanningService {
         }
     }
 
-    private ScanResult scan(String line) {
+    private ScanResult scan(LineWrapper line) {
 
         ScanResult result = cardDetectors.stream()
-            .map(detector -> detector.detectMatch(line))
+            .map(detector -> detector.detectMatch(line.getText()))
             .filter(Objects::nonNull)
-            .map(m -> new ScanResult(m.getSample(), m.getSampleLine(), 1, 1, 0))
+            .map(m -> new ScanResult(SampleSet.singleton(new Sample(line.getFile(), line.getLineNumber(), m.getConfidence(), m.getSample())), 1, 1, 0))
             .reduce(
-                new ScanResult(null, null, 1, 0, 0),
+                new ScanResult(new SampleSet(), 1, 0, 0),
                 ScanResult::reduceOnSingleLine
             );
 

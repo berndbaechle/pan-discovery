@@ -7,35 +7,32 @@ package org.alcibiade.pandiscovery.fs.scan;
  */
 public class ScanResult {
 
-    public static ScanResult EMPTY = new ScanResult(null, null, 0, 0, 0);
-    private String sample;
-    private String sampleLine;
+    public static ScanResult EMPTY = new ScanResult(new SampleSet(), 0, 0, 0);
+    private SampleSet sampleSet;
     private long matchesLow;
     private long matchesHigh;
     private long totalLines;
 
-    public ScanResult(String sample, String sampleLine, long totalLines, long matchesHigh, long matchesLow) {
-        this.sample = sample;
-        this.sampleLine = sampleLine;
+    public ScanResult(SampleSet sampleSet, long totalLines, long matchesHigh, long matchesLow) {
+        this.sampleSet = sampleSet;
         this.matchesLow = matchesLow;
         this.matchesHigh = matchesHigh;
         this.totalLines = totalLines;
     }
 
     public static ScanResult reduce(ScanResult r1, ScanResult r2) {
-        String sample = r1.getSample() != null ? r1.getSample() : r2.getSample();
-        String sampleLine = r1.getSample() != null ? r1.getSampleLine() : r2.getSampleLine();
-        return new ScanResult(sample, sampleLine,
-            r1.getTotalLines() + r2.getTotalLines(),
-            r1.getMatchesHigh() + r2.getMatchesHigh(),
-            r1.getMatchesLow() + r2.getMatchesLow());
+        return reduceInternal(r1, r2, null);
     }
 
+
     public static ScanResult reduceOnSingleLine(ScanResult r1, ScanResult r2) {
-        String sample = r1.getSample() != null ? r1.getSample() : r2.getSample();
-        String sampleLine = r1.getSample() != null ? r1.getSampleLine() : r2.getSampleLine();
-        return new ScanResult(sample, sampleLine,
-            1,
+        return reduceInternal(r1, r2, 1L);
+    }
+
+    private static ScanResult reduceInternal(ScanResult r1, ScanResult r2, Long lines) {
+        return new ScanResult(
+            SampleSet.combine(r1.getSampleSet(), r2.getSampleSet()),
+            lines != null ? lines : r1.getTotalLines() + r2.getTotalLines(),
             r1.getMatchesHigh() + r2.getMatchesHigh(),
             r1.getMatchesLow() + r2.getMatchesLow());
     }
@@ -44,12 +41,8 @@ public class ScanResult {
         return totalLines;
     }
 
-    public String getSample() {
-        return sample;
-    }
-
-    public String getSampleLine() {
-        return sampleLine;
+    public SampleSet getSampleSet() {
+        return sampleSet;
     }
 
     public long getMatchesLow() {
@@ -70,14 +63,12 @@ public class ScanResult {
         if (matchesLow != that.matchesLow) return false;
         if (matchesHigh != that.matchesHigh) return false;
         if (totalLines != that.totalLines) return false;
-        if (sample != null ? !sample.equals(that.sample) : that.sample != null) return false;
-        return sampleLine != null ? sampleLine.equals(that.sampleLine) : that.sampleLine == null;
+        return sampleSet.equals(that.sampleSet);
     }
 
     @Override
     public int hashCode() {
-        int result = sample != null ? sample.hashCode() : 0;
-        result = 31 * result + (sampleLine != null ? sampleLine.hashCode() : 0);
+        int result = sampleSet.hashCode();
         result = 31 * result + (int) (matchesLow ^ (matchesLow >>> 32));
         result = 31 * result + (int) (matchesHigh ^ (matchesHigh >>> 32));
         result = 31 * result + (int) (totalLines ^ (totalLines >>> 32));
@@ -87,8 +78,7 @@ public class ScanResult {
     @Override
     public String toString() {
         return "ScanResult{" +
-            "sample='" + sample + '\'' +
-            ", sampleLine='" + sampleLine + '\'' +
+            "sampleSet=" + sampleSet +
             ", matchesLow=" + matchesLow +
             ", matchesHigh=" + matchesHigh +
             ", totalLines=" + totalLines +
