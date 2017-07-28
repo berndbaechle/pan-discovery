@@ -19,13 +19,13 @@ public class DigitSequenceExtractorTest {
 
         Assertions.assertThat(extractor.extractSequences("Hello")).isEmpty();
         Assertions.assertThat(extractor.extractSequences(
-            "0123456789012345")).containsExactly("0123456789012345");
+            "0123456789012345")).containsExactly(new Sequence("0123456789012345", Confidence.HIGH));
         Assertions.assertThat(extractor.extractSequences(
             "01;23456789012345")).isEmpty();
         Assertions.assertThat(extractor.extractSequences(
             "012345678\t9012345")).isEmpty();
         Assertions.assertThat(extractor.extractSequences(
-            "012345678\t0123456789012345")).containsExactly("0123456789012345");
+            "012345678\t0123456789012345")).containsExactly(new Sequence("0123456789012345", Confidence.HIGH));
         Assertions.assertThat(extractor.extractSequences(
             "a0123456789012345")).isEmpty();
         Assertions.assertThat(extractor.extractSequences(
@@ -33,19 +33,21 @@ public class DigitSequenceExtractorTest {
         Assertions.assertThat(extractor.extractSequences(
             "0a123b45c678d90.12;345")).isEmpty();
         Assertions.assertThat(extractor.extractSequences(
-            "Hello 0123456789012345")).containsExactly("0123456789012345");
+            "Hello 0123456789012345")).containsExactly(new Sequence("0123456789012345", Confidence.HIGH));
         Assertions.assertThat(extractor.extractSequences(
-            "Hello 0123 4567 8901 2345")).containsExactly("0123456789012345");
+            "Hello 0123 4567 8901 2345")).containsExactly(new Sequence("0123456789012345", Confidence.HIGH));
 
         Assertions.assertThat(extractor.extractSequences(
             "Hello 0123 4567  8901 2345")).isEmpty();
 
         Assertions.assertThat(extractor.extractSequences(
-            "Hello 0123 4567-8901 2345")).containsExactly("0123456789012345");
+            "Hello 0123 4567-8901 2345")).containsExactly(new Sequence("0123456789012345", Confidence.HIGH));
 
         Assertions.assertThat(extractor.extractSequences(
             "0123456789012345 4567890123456789"))
-            .containsExactly("0123456789012345", "4567890123456789");
+            .containsExactly(
+                new Sequence("0123456789012345", Confidence.HIGH),
+                new Sequence("4567890123456789", Confidence.HIGH));
 
     }
 
@@ -55,7 +57,7 @@ public class DigitSequenceExtractorTest {
 
         Assertions.assertThat(extractor.extractSequences("Hello")).isEmpty();
         Assertions.assertThat(extractor.extractSequences(
-            "0123 4567 89012345")).hasSize(2).contains("4567");
+            "0123 4567 89012345")).hasSize(2).contains(new Sequence("4567", Confidence.HIGH));
     }
 
 

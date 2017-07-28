@@ -10,7 +10,7 @@ import java.util.List;
 public class DigitAccumulator {
     private static final List<Character> HARD_BREAK = Arrays.asList(';', '.', ',', ':', '\t');
 
-    private List<String> sequences = new ArrayList<>();
+    private List<Sequence> sequences = new ArrayList<>();
     private int[] queue;
     private boolean[] seqStart;
     private int size = 0;
@@ -63,7 +63,7 @@ public class DigitAccumulator {
 
                 if (seqStart[0] && countSeqStarts <= sequenceLength / 4) {
                     String s = new String(queue, 0, sequenceLength);
-                    sequences.add(s);
+                    sequences.add(new Sequence(s, Confidence.HIGH));
                 }
 
                 shift();
@@ -90,7 +90,7 @@ public class DigitAccumulator {
         size--;
     }
 
-    public List<String> getSequences() {
+    public List<Sequence> getSequences() {
         return sequences;
     }
 }

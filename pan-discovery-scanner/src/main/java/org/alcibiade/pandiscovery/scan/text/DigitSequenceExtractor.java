@@ -16,12 +16,9 @@ public class DigitSequenceExtractor {
         this(16);
     }
 
-    public List<String> extractSequences(String text) {
-
+    public List<Sequence> extractSequences(String text) {
         DigitAccumulator accumulator = new DigitAccumulator(this.sequenceLength);
-
         text.chars().forEach(accumulator::consumeCharacter);
-
         accumulator.consumeCharacter(' ');
         return accumulator.getSequences();
     }

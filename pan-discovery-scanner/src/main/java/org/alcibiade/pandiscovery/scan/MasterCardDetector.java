@@ -1,6 +1,7 @@
 package org.alcibiade.pandiscovery.scan;
 
 import org.alcibiade.pandiscovery.scan.text.DigitSequenceExtractor;
+import org.alcibiade.pandiscovery.scan.text.Sequence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,10 +24,10 @@ public class MasterCardDetector implements Detector {
 
     @Override
     public DetectionResult detectMatch(String text) {
-        for (String sequence : sequenceExtractor.extractSequences(text)) {
-            Matcher matcher = cardPattern.matcher(sequence);
-            if (matcher.matches() && luhn.check(sequence)) {
-                return new DetectionResult(CardType.MASTERCARD, sequence, text);
+        for (Sequence sequence : sequenceExtractor.extractSequences(text)) {
+            Matcher matcher = cardPattern.matcher(sequence.getText());
+            if (matcher.matches() && luhn.check(sequence.getText())) {
+                return new DetectionResult(CardType.MASTERCARD, sequence.getText(), text, sequence.getConfidence());
             }
         }
 
