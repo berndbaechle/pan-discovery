@@ -2,7 +2,7 @@
 
 set -e
 
-BASE_DIR=$(readlink -f $(dirname $0))
+BASE_DIR=$(readlink -f $(dirname $0)/..)
 DOCKER_DIR=${BASE_DIR}/docker
 
 cd ${BASE_DIR}
