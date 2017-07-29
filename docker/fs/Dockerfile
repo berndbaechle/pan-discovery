@@ -14,4 +14,4 @@ WORKDIR /report
 CMD java \
         ${JAVA_OPTS} \
         -jar /runtime/pan-discovery-fs.jar \
-        /scanfolder
+        --verbose /scanfolder
