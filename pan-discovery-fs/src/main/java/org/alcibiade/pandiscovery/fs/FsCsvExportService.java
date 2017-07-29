@@ -48,7 +48,7 @@ public class FsCsvExportService {
         logger.info("Results will be logged in {} and {}", this.csvFilePathFiles, this.csvFilePathSamples);
 
         Files.write(csvFilePathFiles,
-            Collections.singleton("File;Total Lines;High Confidence Matches; High Confidence Matches;Content Type"),
+            Collections.singleton("File;Total Lines;High Confidence Matches; Low Confidence Matches;Content Type"),
             StandardCharsets.UTF_8,
             StandardOpenOption.CREATE,
             StandardOpenOption.TRUNCATE_EXISTING);

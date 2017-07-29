@@ -1,6 +1,6 @@
 package org.alcibiade.pandiscovery.scan.text;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Extract digit sequences from a String.
@@ -16,7 +16,7 @@ public class DigitSequenceExtractor {
         this(16);
     }
 
-    public List<Sequence> extractSequences(String text) {
+    public Collection<Sequence> extractSequences(String text) {
         DigitAccumulator accumulator = new DigitAccumulator(this.sequenceLength);
         text.chars().forEach(accumulator::consumeCharacter);
         accumulator.consumeCharacter(' ');

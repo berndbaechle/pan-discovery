@@ -3,6 +3,7 @@ package org.alcibiade.pandiscovery.fs.scan;
 import org.alcibiade.pandiscovery.fs.FsCsvExportService;
 import org.alcibiade.pandiscovery.fs.RuntimeParameters;
 import org.alcibiade.pandiscovery.scan.Detector;
+import org.alcibiade.pandiscovery.scan.text.Confidence;
 import org.apache.tika.Tika;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,7 +98,13 @@ public class FileScanningService {
         ScanResult result = cardDetectors.stream()
             .map(detector -> detector.detectMatch(line.getText()))
             .filter(Objects::nonNull)
-            .map(m -> new ScanResult(SampleSet.singleton(new Sample(line.getFile(), line.getLineNumber(), m.getConfidence(), m.getSample())), 1, 1, 0))
+            .map(m -> new ScanResult(
+                SampleSet.singleton(
+                    new Sample(line.getFile(), line.getLineNumber(), m.getConfidence(), m.getSample())
+                ), 1,
+                m.getConfidence() == Confidence.HIGH ? 1 : 0,
+                m.getConfidence() == Confidence.LOW ? 1 : 0)
+            )
             .reduce(
                 new ScanResult(new SampleSet(), 1, 0, 0),
                 ScanResult::reduceOnSingleLine

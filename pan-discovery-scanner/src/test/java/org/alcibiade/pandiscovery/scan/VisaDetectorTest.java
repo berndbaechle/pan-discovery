@@ -1,5 +1,6 @@
 package org.alcibiade.pandiscovery.scan;
 
+import org.alcibiade.pandiscovery.scan.text.Confidence;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
@@ -40,11 +41,25 @@ public class VisaDetectorTest {
     @Test
     public void testVisaDetectionRanking() {
         Detector detector = new VisaDetector(new Luhn());
-        Assertions.assertThat(detector.detectMatch("FR76 3000 4004 5100 0209 8404 862")).isNotNull();
-        Assertions.assertThat(detector.detectMatch("40045100020984 04")).isNotNull();
-        Assertions.assertThat(detector.detectMatch("9 4004510002098404")).isNotNull();
 
-        Assertions.assertThat(detector.detectMatch("Visa,4539998389724102")).isNotNull();
+        Assertions.assertThat(
+            detector.detectMatch("FR76 3000 4004 5100 0209 8404 862").getConfidence())
+            .isEqualTo(Confidence.LOW);
 
+        Assertions.assertThat(
+            detector.detectMatch("40045100020984 04").getConfidence())
+            .isEqualTo(Confidence.LOW);
+
+        Assertions.assertThat(
+            detector.detectMatch("9 4004510002098404").getConfidence())
+            .isEqualTo(Confidence.LOW);
+
+        Assertions.assertThat(
+            detector.detectMatch("Visa,4539998389724102").getConfidence())
+            .isEqualTo(Confidence.HIGH);
+
+        Assertions.assertThat(
+            detector.detectMatch("IBAN: FR12 4326 5532 9027 1375 42").getConfidence())
+            .isEqualTo(Confidence.LOW);
     }
 }

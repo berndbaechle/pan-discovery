@@ -48,8 +48,32 @@ public class DigitSequenceExtractorTest {
         Assertions.assertThat(extractor.extractSequences(
             "0123456789012345 4567890123456789"))
             .containsExactly(
+                new Sequence("0123456789012345", Confidence.LOW),
+                new Sequence("4567890123456789", Confidence.LOW));
+
+        Assertions.assertThat(extractor.extractSequences(
+            "0123456789012345  4567890123456789"))
+            .containsExactly(
                 new Sequence("0123456789012345", Confidence.HIGH),
                 new Sequence("4567890123456789", Confidence.HIGH));
+
+        Assertions.assertThat(extractor.extractSequences(
+            "0123456789012345 4567890123456789"))
+            .containsExactly(
+                new Sequence("0123456789012345", Confidence.LOW),
+                new Sequence("4567890123456789", Confidence.LOW));
+
+        Assertions.assertThat(extractor.extractSequences(
+            "0 123456789012345 6"))
+            .containsExactly(
+                new Sequence("0123456789012345", Confidence.LOW),
+                new Sequence("1234567890123456", Confidence.LOW));
+
+
+        Assertions.assertThat(extractor.extractSequences(
+            "IBAN: FR12 4326 5532 9027 1375 42 "))
+            .containsExactly(
+                new Sequence("4326553290271375", Confidence.LOW));
 
     }
 
@@ -59,7 +83,7 @@ public class DigitSequenceExtractorTest {
 
         Assertions.assertThat(extractor.extractSequences("Hello")).isEmpty();
         Assertions.assertThat(extractor.extractSequences(
-            "0123 4567 89012345")).hasSize(2).contains(new Sequence("4567", Confidence.HIGH));
+            "0123 4567 89012345")).hasSize(2).contains(new Sequence("4567", Confidence.LOW));
     }
 
 

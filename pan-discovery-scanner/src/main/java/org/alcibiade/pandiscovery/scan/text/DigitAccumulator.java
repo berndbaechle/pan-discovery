@@ -1,8 +1,6 @@
 package org.alcibiade.pandiscovery.scan.text;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * Accumulate digits read from text sequences.
@@ -10,18 +8,19 @@ import java.util.List;
 public class DigitAccumulator {
     private static final List<Character> HARD_BREAK = Arrays.asList(';', '.', ',', ':', '\t');
 
-    private List<Sequence> sequences = new ArrayList<>();
+    private Deque<Sequence> sequences = new ArrayDeque<>();
     private int[] queue;
-    private boolean[] seqStart;
+    private Confidence[] seqStart;
     private int size = 0;
     private boolean onDelimiter = true;
+    private boolean lastSequenceIsClosed = true;
 
     private int sequenceLength;
 
     public DigitAccumulator(int sequenceLength) {
         this.sequenceLength = sequenceLength;
         queue = new int[sequenceLength];
-        seqStart = new boolean[sequenceLength];
+        seqStart = new Confidence[sequenceLength];
     }
 
     public void consumeCharacter(int c) {
@@ -33,6 +32,13 @@ public class DigitAccumulator {
          */
 
         if (isDigit) {
+            // If the last sequence is not yet completely isolated, we decrease its confidence.
+
+            if (!this.sequences.isEmpty() && !lastSequenceIsClosed) {
+                Sequence last = this.sequences.pollLast();
+                this.sequences.addLast(new Sequence(last.getText(), Confidence.LOW));
+            }
+
             // Digits are accumulated
 
             // If full, shift buffer
@@ -42,11 +48,14 @@ public class DigitAccumulator {
 
             // Append the new value
             queue[size] = c;
-            seqStart[size] = onDelimiter;
+            seqStart[size] = onDelimiter ?
+                (size == 0 ? Confidence.HIGH : Confidence.LOW)
+                : null;
             size++;
         } else if (onDelimiter) {
             // Two delimiters ends a possible sequence;
             size = 0;
+            lastSequenceIsClosed = true;
         } else {
 
             /*
@@ -54,16 +63,20 @@ public class DigitAccumulator {
              */
 
             if (size == sequenceLength) {
-                int countSeqStarts = 0;
+                Confidence confidence = seqStart[0];
+
                 for (int i = 0; i < sequenceLength; i++) {
-                    if (seqStart[i]) {
-                        countSeqStarts++;
+                    if (seqStart[i] != null) {
+                        if (i % 4 != 0) {
+                            confidence = Confidence.LOW;
+                        }
                     }
                 }
 
-                if (seqStart[0] && countSeqStarts <= sequenceLength / 4) {
+                if (seqStart[0] != null) {
                     String s = new String(queue, 0, sequenceLength);
-                    sequences.add(new Sequence(s, Confidence.HIGH));
+                    sequences.addLast(new Sequence(s, confidence));
+                    lastSequenceIsClosed = false;
                 }
 
                 shift();
@@ -76,6 +89,7 @@ public class DigitAccumulator {
 
         if (Character.isAlphabetic(c) || HARD_BREAK.contains((char) c)) {
             size = 0;
+            lastSequenceIsClosed = true;
         }
 
         onDelimiter = Character.isWhitespace(c) || HARD_BREAK.contains((char) c);
@@ -90,7 +104,7 @@ public class DigitAccumulator {
         size--;
     }
 
-    public List<Sequence> getSequences() {
+    public Collection<Sequence> getSequences() {
         return sequences;
     }
 }

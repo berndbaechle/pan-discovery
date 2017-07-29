@@ -84,8 +84,8 @@ public class FileScanningServiceTest {
         ScanResult scanResult = scanResultArgumentCaptor.getValue();
 
         Assertions.assertThat(scanResult.getTotalLines()).isEqualTo(59);
-        Assertions.assertThat(scanResult.getMatchesHigh()).isEqualTo(42);
-        Assertions.assertThat(scanResult.getMatchesLow()).isEqualTo(0);
+        Assertions.assertThat(scanResult.getMatchesHigh()).isEqualTo(40);
+        Assertions.assertThat(scanResult.getMatchesLow()).isEqualTo(2);
         Assertions.assertThat(scanResult.getSampleSet()).hasSize(42);
     }
 }

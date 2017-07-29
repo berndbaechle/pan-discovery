@@ -35,4 +35,12 @@ public class Sequence {
         result = 31 * result + confidence.hashCode();
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Sequence{" +
+            "text='" + text + '\'' +
+            ", confidence=" + confidence +
+            '}';
+    }
 }
