@@ -78,7 +78,7 @@ public class DigitAccumulator {
             size = 0;
         }
 
-        onDelimiter = Character.isWhitespace(c);
+        onDelimiter = Character.isWhitespace(c) || HARD_BREAK.contains((char) c);
     }
 
     private void shift() {

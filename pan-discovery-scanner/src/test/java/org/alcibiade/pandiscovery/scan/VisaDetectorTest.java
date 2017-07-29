@@ -30,6 +30,11 @@ public class VisaDetectorTest {
         Assertions.assertThat(detector.detectMatch("Card is 4783 8539 3463 8427, yeah !")).isNotNull();
         Assertions.assertThat(detector.detectMatch("Card is 4783 8539 3463 84270, yeah !")).isNull();
         Assertions.assertThat(detector.detectMatch("Card is 47838539346384270, yeah !")).isNull();
+
+        // Sample coming from generated CSV list and was initially not detected
+        Assertions.assertThat(detector.detectMatch("4539998389724102")).isNotNull();
+        Assertions.assertThat(detector.detectMatch(",4539998389724102")).isNotNull();
+        Assertions.assertThat(detector.detectMatch("Visa,4539998389724102")).isNotNull();
     }
 
     @Test
@@ -38,5 +43,8 @@ public class VisaDetectorTest {
         Assertions.assertThat(detector.detectMatch("FR76 3000 4004 5100 0209 8404 862")).isNotNull();
         Assertions.assertThat(detector.detectMatch("40045100020984 04")).isNotNull();
         Assertions.assertThat(detector.detectMatch("9 4004510002098404")).isNotNull();
+
+        Assertions.assertThat(detector.detectMatch("Visa,4539998389724102")).isNotNull();
+
     }
 }

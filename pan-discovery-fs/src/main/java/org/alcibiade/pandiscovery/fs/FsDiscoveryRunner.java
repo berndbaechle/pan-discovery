@@ -53,6 +53,9 @@ public class FsDiscoveryRunner implements ApplicationRunner {
             stopwatch.elapsedTimeAsString()
         );
 
-        logger.info("Report written to {}", exportService.getCsvFilePath());
+        logger.info("Report written to {} / {}",
+            exportService.getCsvFilePathFiles(),
+            exportService.getCsvFilePathSamples()
+        );
     }
 }

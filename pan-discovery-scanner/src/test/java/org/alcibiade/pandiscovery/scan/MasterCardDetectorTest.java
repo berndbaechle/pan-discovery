@@ -27,5 +27,7 @@ public class MasterCardDetectorTest {
 
         Assertions.assertThat(detector.detectMatch("The card is 5207843835205199, yeah !")).isNotNull();
         Assertions.assertThat(detector.detectMatch("01234567    52078438 35205199 01234567")).isNotNull();
+
+        Assertions.assertThat(detector.detectMatch("MasterCard,5541743998422182")).isNotNull();
     }
 }

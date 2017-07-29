@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Export filesystem report.
@@ -29,7 +30,8 @@ public class FsCsvExportService {
     private Date reportDateStart;
     private long filesExplored = 0;
     private long pansDetected = 0;
-    private Path csvFilePath;
+    private Path csvFilePathFiles;
+    private Path csvFilePathSamples;
     private RuntimeParameters runtimeParameters;
 
     @Autowired
@@ -41,19 +43,29 @@ public class FsCsvExportService {
     public void init() throws IOException {
         reportDateStart = new Date();
         String d = new SimpleDateFormat("yyyy-MM-dd_HHmm").format(reportDateStart);
-        String filename = "PAN_Discovery_" + d + ".csv";
-        this.csvFilePath = Paths.get(filename);
-        logger.info("Results will be logged in {}", this.csvFilePath);
+        this.csvFilePathFiles = Paths.get("PAN_Discovery_" + d + "-files.csv");
+        this.csvFilePathSamples = Paths.get("PAN_Discovery_" + d + "-samples.csv");
+        logger.info("Results will be logged in {} and {}", this.csvFilePathFiles, this.csvFilePathSamples);
 
-        Files.write(csvFilePath,
+        Files.write(csvFilePathFiles,
             Collections.singleton("File;Total Lines;High Confidence Matches; High Confidence Matches;Content Type"),
-                StandardCharsets.UTF_8,
-                StandardOpenOption.CREATE,
+            StandardCharsets.UTF_8,
+            StandardOpenOption.CREATE,
+            StandardOpenOption.TRUNCATE_EXISTING);
+
+        Files.write(csvFilePathSamples,
+            Collections.singleton("File;Line;Confidence;PAN"),
+            StandardCharsets.UTF_8,
+            StandardOpenOption.CREATE,
             StandardOpenOption.TRUNCATE_EXISTING);
     }
 
-    public Date getReportDateStart() {
-        return reportDateStart;
+    public Path getCsvFilePathFiles() {
+        return csvFilePathFiles;
+    }
+
+    public Path getCsvFilePathSamples() {
+        return csvFilePathSamples;
     }
 
     public long getFilesExplored() {
@@ -62,10 +74,6 @@ public class FsCsvExportService {
 
     public long getPansDetected() {
         return pansDetected;
-    }
-
-    public Path getCsvFilePath() {
-        return csvFilePath;
     }
 
     public void register(Path file, String contentType, ScanResult result) {
@@ -80,26 +88,48 @@ public class FsCsvExportService {
         pansDetected += totalMatches;
 
         if (totalMatches > 0) {
-            String row = String.format("%s;%d;%d;%d;%s",
-                    file.toString(),
-                result.getTotalLines(),
-                result.getMatchesHigh(),
-                result.getMatchesLow(),
-                contentType
-            );
-
-            List<String> rows = new ArrayList<>();
-            rows.add(row);
-
             try {
-                Files.write(csvFilePath,
-                    rows,
-                        StandardCharsets.UTF_8,
-                        StandardOpenOption.CREATE,
-                        StandardOpenOption.APPEND);
+                writeFileRecord(file, contentType, result);
+                writeSamplesRecord(result);
             } catch (IOException e) {
-                throw new IllegalStateException("Could not write report at " + this.csvFilePath, e);
+                throw new IllegalStateException("Could not write reports", e);
             }
         }
+    }
+
+    private void writeFileRecord(Path file, String contentType, ScanResult result) throws IOException {
+        String row = String.format("%s;%d;%d;%d;%s",
+            file.toString(),
+            result.getTotalLines(),
+            result.getMatchesHigh(),
+            result.getMatchesLow(),
+            contentType
+        );
+
+        List<String> rows = new ArrayList<>();
+        rows.add(row);
+
+        Files.write(csvFilePathFiles,
+            rows,
+            StandardCharsets.UTF_8,
+            StandardOpenOption.CREATE,
+            StandardOpenOption.APPEND);
+    }
+
+    private void writeSamplesRecord(ScanResult scanResult) throws IOException {
+
+        List<String> rows = scanResult.getSampleSet().stream()
+            .map(sample -> String.format("%s;%d;%s;%s",
+                sample.getFile().toString(),
+                sample.getLine(),
+                sample.getConfidence(),
+                sample.getDetectedPan()))
+            .collect(Collectors.toList());
+
+        Files.write(csvFilePathSamples,
+            rows,
+            StandardCharsets.UTF_8,
+            StandardOpenOption.CREATE,
+            StandardOpenOption.APPEND);
     }
 }
