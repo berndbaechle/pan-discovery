@@ -24,6 +24,11 @@ git add .
 git commit -m "Release ${RELEASE_VERSION}"
 git tag ${RELEASE_VERSION}
 
+./mvnw -Poracle -Ppostgres -Pmysql clean install
+mv pan-discovery-db/target/*.jar ~/Desktop/
+mv pan-discovery-fs/target/*.jar ~/Desktop/
+./mvnw clean
+
 ./mvnw versions:set -DnewVersion=${DEVELOPMENT_VERSION}
 ./mvnw versions:commit
 git add .
