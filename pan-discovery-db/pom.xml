@@ -85,6 +85,22 @@
         </profile>
 
         <profile>
+            <id>mssql</id>
+
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+
+            <dependencies>
+                <dependency>
+                    <groupId>com.microsoft.sqlserver</groupId>
+                    <artifactId>mssql-jdbc</artifactId>
+                    <version>6.2.1.jre8</version>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <profile>
             <id>oracle</id>
 
             <activation>

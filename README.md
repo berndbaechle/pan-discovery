@@ -82,6 +82,12 @@ Report consists of two CSV files:
 To scan a relational database, you need to provide credentials for a user
 access having at least read privileges on the content.
 
+The URL structure depends on the database:
+* For Oracle: jdbc:oracle:thin:@<host>:<port>:<dbname> (default port is 1521)
+* For MS SQL: jdbc:sqlserver://<host>/<instance name>
+* For PostgreSQL: jdbc:postgresql://<host>:<port>/<dbname> (default port is 5432)
+* For MySQL: jdbc:mysql://<host>/<dbname>
+
 ```
 yk@triton:~/Sample$ java \
     -Dspring.datasource.url=jdbc:postgresql://localhost:5432/chess1 \
@@ -119,6 +125,7 @@ Report written to PAN_Discovery_DB_2017-07-29_1727.csv
 
 The distributed executable JAR files are bundled with drivers supporting:
 * Oracle Database
+* Microsoft SQL Server
 * PostgreSQL
 * MySQL / MariaDB
 
