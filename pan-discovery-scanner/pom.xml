@@ -6,14 +6,14 @@
 
     <groupId>org.alcibiade</groupId>
     <artifactId>pan-discovery-scanner</artifactId>
-    <version>1.0-RC2-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <name>PAN Discovery - Scan engines</name>
 
     <parent>
         <groupId>org.alcibiade</groupId>
         <artifactId>pan-discovery</artifactId>
-        <version>1.0-RC2-SNAPSHOT</version>
+        <version>1.0.0</version>
         <relativePath>..</relativePath>
     </parent>
 

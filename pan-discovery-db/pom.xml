@@ -5,14 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>pan-discovery-db</artifactId>
-    <version>1.0-RC2-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <name>PAN Discovery - RDBMS Scanner</name>
 
     <parent>
         <groupId>org.alcibiade</groupId>
         <artifactId>pan-discovery</artifactId>
-        <version>1.0-RC2-SNAPSHOT</version>
+        <version>1.0.0</version>
         <relativePath>..</relativePath>
     </parent>
 

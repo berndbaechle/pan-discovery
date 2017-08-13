@@ -6,7 +6,7 @@
 
     <groupId>org.alcibiade</groupId>
     <artifactId>pan-discovery</artifactId>
-    <version>1.0-RC2-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
 
     <name>PAN Discovery</name>
